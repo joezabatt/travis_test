@@ -46,9 +46,9 @@ before_install:
     if [ -n "$GH_TOKEN" ]; then
       echo "Cloning private addon..."
       git clone "https://${GH_TOKEN}@${PRIVATE_ADDON_REPO}" \
-        "$PRIVATE_ADDONS_DIR/your-private-odoo-addon"
+        "$PRIVATE_ADDONS_DIR/google_map_view"
       if [ -n "$PRIVATE_ADDON_REF" ]; then
-        cd "$PRIVATE_ADDONS_DIR/your-private-odoo-addon" && git checkout "$PRIVATE_ADDON_REF" && cd -
+        cd "$PRIVATE_ADDONS_DIR/google_map_view" && git checkout "$PRIVATE_ADDON_REF" && cd -
       fi
     fi
   - 'test -n "$MODULE" || (echo "ERROR: env var MODULE is not set" && exit 1)'
@@ -86,7 +86,7 @@ script:
     --stop-after-init
     --test-enable
     --without-demo=all
-    --addons-path="$TRAVIS_BUILD_DIR,$ODOO_DIR/addons"
+    --addons-path="$PRIVATE_ADDONS_DIR,$ODOO_DIR/addons"
     -d "$DB_NAME"
     -i "$MODULE"
 
