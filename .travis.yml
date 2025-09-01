@@ -15,8 +15,11 @@ env:
     - ODOO_DIR=$HOME/odoo-8
     - DB_NAME=odoo_test
     - DB_USER=postgres
+    - PRIVATE_ADDONS_DIR=/tmp/private-addons
+    - PRIVATE_ADDON_REPO=https://github.com/zabatt/google_map_view.git
+    - PRIVATE_ADDON_REF=ratmil.torres_develop_10312_fix_dependency  # optional branch/tag
     # REQUIRED: set in Travis settings, e.g. MODULE=my_module
-    # - MODULE=
+    - MODULE=google_map_view
 
 addons:
   apt:
@@ -37,6 +40,17 @@ addons:
       - gdebi-core           # (optional) for wkhtmltopdf local installs
 
 before_install:
+  # ... your existing setup ...
+  - mkdir -p "$PRIVATE_ADDONS_DIR"
+  - |
+    if [ -n "$GH_TOKEN" ]; then
+      echo "Cloning private addon..."
+      git clone "https://${GH_TOKEN}@${PRIVATE_ADDON_REPO}" \
+        "$PRIVATE_ADDONS_DIR/your-private-odoo-addon"
+      if [ -n "$PRIVATE_ADDON_REF" ]; then
+        cd "$PRIVATE_ADDONS_DIR/your-private-odoo-addon" && git checkout "$PRIVATE_ADDON_REF" && cd -
+      fi
+    fi
   - 'test -n "$MODULE" || (echo "ERROR: env var MODULE is not set" && exit 1)'
   - sudo locale-gen en_US.UTF-8 || true
   - export LANG=en_US.UTF-8 LC_ALL=en_US.UTF-8
