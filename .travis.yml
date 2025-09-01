@@ -1,0 +1,93 @@
+# .travis.yml — Odoo 8 module tests on Ubuntu 16.04 (xenial)
+
+dist: xenial                  # Ubuntu 16.04
+language: python
+python:
+  - "2.7"
+
+services:
+  - postgresql
+
+env:
+  global:
+    - ODOO_REPO=https://github.com/odoo/odoo.git
+    - ODOO_BRANCH=8.0
+    - ODOO_DIR=$HOME/odoo-8
+    - DB_NAME=odoo_test
+    - DB_USER=postgres
+    # REQUIRED: set in Travis settings, e.g. MODULE=my_module
+    # - MODULE=
+
+addons:
+  apt:
+    packages:
+      - build-essential
+      - libxml2-dev
+      - libxslt1-dev
+      - libevent-dev
+      - libpq-dev
+      - libldap2-dev
+      - libsasl2-dev
+      - libjpeg-dev
+      - zlib1g-dev
+      - python-dev
+      - python-pip
+      - node-less            # lessc for asset compilation (safe even if not used)
+      - node-clean-css       # cssmin (Odoo 8 optional)
+      - gdebi-core           # (optional) for wkhtmltopdf local installs
+
+before_install:
+  - 'test -n "$MODULE" || (echo "ERROR: env var MODULE is not set" && exit 1)'
+  - sudo locale-gen en_US.UTF-8 || true
+  - export LANG=en_US.UTF-8 LC_ALL=en_US.UTF-8
+
+install:
+  # Get Odoo 8
+  - git clone --depth 1 --branch "$ODOO_BRANCH" "$ODOO_REPO" "$ODOO_DIR"
+  # Use Odoo’s own requirements (plus your module’s, if present)
+  - pip install --upgrade pip==20.3.4 setuptools==44.1.1 wheel==0.34.2
+  - pip install -r "$ODOO_DIR/requirements.txt"
+  # Useful test libs for older stacks
+  - pip install psycopg2==2.7.7 mock==2.0.0 unittest2==1.1.0
+  # Optional: your module’s extra deps
+  - if [ -f requirements.txt ]; then pip install -r requirements.txt; fi
+
+before_script:
+  # Prepare database
+  - psql -U "$DB_USER" -c 'CREATE EXTENSION IF NOT EXISTS "uuid-ossp";' -d postgres || true
+  - createdb -U "$DB_USER" "$DB_NAME"
+  # Sanity: show paths
+  - echo "Odoo at: $ODOO_DIR"
+  - echo "Module  : $MODULE"
+  - ls -la "$TRAVIS_BUILD_DIR"
+
+script:
+  # Run tests for your module
+  - >
+    python "$ODOO_DIR/openerp-server"
+    --db_user="$DB_USER"
+    --db_host=localhost
+    --db_port=5432
+    --log-level=test
+    --stop-after-init
+    --test-enable
+    --without-demo=all
+    --addons-path="$TRAVIS_BUILD_DIR,$ODOO_DIR/addons"
+    -d "$DB_NAME"
+    -i "$MODULE"
+
+after_failure:
+  # Helpful logs on failure
+  - tail -n +1 ~/.local/share/Odoo/log/* 2>/dev/null || true
+
+cache:
+  pip: true
+
+git:
+  depth: 10
+
+branches:
+  only:
+    - main
+    - master
+    - develop
