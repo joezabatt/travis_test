@@ -16,7 +16,7 @@ env:
     - DB_NAME=odoo_test
     - DB_USER=postgres
     - PRIVATE_ADDONS_DIR=/tmp/private-addons
-    - PRIVATE_ADDON_REPO=https://github.com/zabatt/google_map_view.git
+    - PRIVATE_ADDON_REPO=github.com/zabatt/google_map_view.git
     - PRIVATE_ADDON_REF=ratmil.torres_develop_10312_fix_dependency  # optional branch/tag
     # REQUIRED: set in Travis settings, e.g. MODULE=my_module
     - MODULE=google_map_view
