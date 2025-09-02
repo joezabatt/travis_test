@@ -14,7 +14,7 @@ env:
     - ODOO_BRANCH=8.0
     - ODOO_DIR=$HOME/odoo-8
     - DB_NAME=odoo_test
-    - DB_USER=postgres
+    - DB_USER=odoo
     - PRIVATE_ADDONS_DIR=/tmp/private-addons
     - PRIVATE_ADDON_REPO=github.com/zabatt/google_map_view.git
     - PRIVATE_ADDON_REF=ratmil.torres_develop_10312_fix_dependency  # optional branch/tag
