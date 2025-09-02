@@ -112,8 +112,8 @@ install:
 before_script:
   # Prepare database
   - psql -U "$POSTGRES_ADMIN_USER" -c 'CREATE EXTENSION IF NOT EXISTS "uuid-ossp";' -d postgres || true
-  - psql -U "$POSTGRES_ADMIN_USER" -c "CREATE USER $DB_USER with password 'odoo'"
-  - PGPASSWORD=odoo psql -U "$DB_USER" -c "CREATE DATABASE $DB_NAME"
+  - psql -U "$POSTGRES_ADMIN_USER" -c "CREATE USER $DB_USER"
+  - psql -U "$DB_USER" -c "CREATE DATABASE $DB_NAME"
   # Sanity: show paths
   - echo "Odoo at $ODOO_DIR"
   - echo "Module $MODULE"
