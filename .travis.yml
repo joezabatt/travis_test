@@ -16,12 +16,14 @@ env:
     - DB_NAME=odoo_test
     - POSTGRES_ADMIN_USER=postgres
     - DB_USER=odoo_user
-    - PRIVATE_ADDONS_DIR=/tmp/private-addons
-    - PRIVATE_ADDON_REPO=github.com/zabatt/google_map_view.git
-    - PRIVATE_ADDON_REF=ratmil.torres_develop_10312_fix_dependency  # optional branch/tag
+    - CUSTOM_ADDONS_DIR=/tmp/private-addons
+    - GOOGLE_MAP_VIEW_REPO=github.com/zabatt/google_map_view.git
+    - GOOGLE_MAP_VIEW_BRANCH=ratmil.torres_develop_10312_fix_dependency  # optional branch/tag
+    - FIELDSERVICE_REPO=github.com/zabatt/fieldservice_map_view.git
+    - FIELDSERVICE_BRANCH=ratmil.torres_develop_10312_fieldservice-automatic-tests-on-git-push  # optional branch/tag
     # REQUIRED: set in Travis settings, e.g. MODULE=my_module
     - GOOGLE_MAP_VIEW_MODULE=google_map_view
-    - MODULE=google_map_view
+    - FIELDSERVICE_MODULE=fieldservice
 
 
 
@@ -85,18 +87,27 @@ addons:
 
 before_install:
   # ... your existing setup ...
-  - mkdir -p "$PRIVATE_ADDONS_DIR"
+  - mkdir -p "$CUSTOM_ADDONS_DIR"
   - 'test -n "$GOOGLE_MAP_VIEW_MODULE" || (echo "ERROR: env var GOOGLE_MAP_VIEW_MODULE is not set" && exit 1)'
   - |
     if [ -n "$GH_TOKEN" ]; then
-      echo "Cloning private addon..."
-      git clone "https://${GH_TOKEN}@${PRIVATE_ADDON_REPO}" \
-        "$PRIVATE_ADDONS_DIR/$GOOGLE_MAP_VIEW_MODULE"
-      if [ -n "$PRIVATE_ADDON_REF" ]; then
-        cd "$PRIVATE_ADDONS_DIR/$GOOGLE_MAP_VIEW_MODULE" && git checkout "$PRIVATE_ADDON_REF" && cd -
+      echo "Cloning google_map_view module..."
+      git clone "https://${GH_TOKEN}@${GOOGLE_MAP_VIEW_REPO}" \
+        "$CUSTOM_ADDONS_DIR/$GOOGLE_MAP_VIEW_MODULE"
+      if [ -n "$GOOGLE_MAP_VIEW_BRANCH" ]; then
+        cd "$CUSTOM_ADDONS_DIR/$GOOGLE_MAP_VIEW_MODULE" && git checkout "$GOOGLE_MAP_VIEW_BRANCH" && cd -
       fi
     fi
-  - 'test -n "$MODULE" || (echo "ERROR: env var MODULE is not set" && exit 1)'
+  - |
+    if [ -n "$GH_TOKEN" ]; then
+      echo "Cloning fieldservice module..."
+      git clone "https://${GH_TOKEN}@${FIELDSERVICE_REPO}" \
+        "$CUSTOM_ADDONS_DIR/$FIELDSERVICE_MODULE"
+      if [ -n "$FIELDSERVICE_BRANCH" ]; then
+        cd "$CUSTOM_ADDONS_DIR/$FIELDSERVICE_MODULE" && git checkout "$FIELDSERVICE_BRANCH" && cd -
+      fi
+    fi
+  - 'test -n "$FIELDSERVICE_MODULE" || (echo "ERROR: env var FIELDSERVICE_MODULE is not set" && exit 1)'
   - sudo locale-gen en_US.UTF-8 || true
   - export LANG=en_US.UTF-8 LC_ALL=en_US.UTF-8
 
@@ -119,7 +130,7 @@ before_script:
   - psql -U "$POSTGRES_ADMIN_USER" -c "ALTER DATABASE $DB_NAME OWNER TO $DB_USER"
   # Sanity: show paths
   - echo "Odoo at $ODOO_DIR"
-  - echo "Module $MODULE"
+  - echo "Module $FIELDSERVICE_MODULE"
   - ls -la "$TRAVIS_BUILD_DIR"
   - ls -la "$ODOO_DIR"
 
@@ -134,9 +145,9 @@ script:
     --stop-after-init
     --test-enable
     --without-demo=all
-    --addons-path="$PRIVATE_ADDONS_DIR,$ODOO_DIR/addons"
+    --addons-path="$CUSTOM_ADDONS_DIR,$ODOO_DIR/addons"
     -d "$DB_NAME"
-    -i "$GOOGLE_MAP_VIEW_MODULE"
+    -i "$FIELDSERVICE_MODULE"
 
 after_failure:
   # Helpful logs on failure
