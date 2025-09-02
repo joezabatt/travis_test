@@ -19,7 +19,7 @@ env:
     - CUSTOM_ADDONS_DIR=/tmp/private-addons
     - GOOGLE_MAP_VIEW_REPO=github.com/zabatt/google_map_view.git
     - GOOGLE_MAP_VIEW_BRANCH=ratmil.torres_develop_10312_fix_dependency  # optional branch/tag
-    - FIELDSERVICE_REPO=github.com/zabatt/fieldservice_map_view.git
+    - FIELDSERVICE_REPO=github.com/zabatt/fieldservice.git
     - FIELDSERVICE_BRANCH=ratmil.torres_develop_10312_fieldservice-automatic-tests-on-git-push  # optional branch/tag
     # REQUIRED: set in Travis settings, e.g. MODULE=my_module
     - GOOGLE_MAP_VIEW_MODULE=google_map_view
