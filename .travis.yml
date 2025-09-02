@@ -113,7 +113,8 @@ before_script:
   # Prepare database
   - psql -U "$POSTGRES_ADMIN_USER" -c 'CREATE EXTENSION IF NOT EXISTS "uuid-ossp";' -d postgres || true
   - psql -U "$POSTGRES_ADMIN_USER" -c "CREATE USER $DB_USER"
-  - psql -U "$DB_USER" -c "CREATE DATABASE $DB_NAME"
+  - psql -U "$POSTGRES_ADMIN_USER" -c "CREATE DATABASE $DB_NAME"
+  - psql -U "$POSTGRES_ADMIN_USER" -c "ALTER DATABASE $DB_NAME OWNER TO $DB_USER"
   # Sanity: show paths
   - echo "Odoo at $ODOO_DIR"
   - echo "Module $MODULE"
