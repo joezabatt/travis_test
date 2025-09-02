@@ -20,6 +20,7 @@ env:
     - PRIVATE_ADDON_REPO=github.com/zabatt/google_map_view.git
     - PRIVATE_ADDON_REF=ratmil.torres_develop_10312_fix_dependency  # optional branch/tag
     # REQUIRED: set in Travis settings, e.g. MODULE=my_module
+    - GOOGLE_MAP_VIEW_MODULE=google_map_view
     - MODULE=google_map_view
 
 
@@ -85,13 +86,14 @@ addons:
 before_install:
   # ... your existing setup ...
   - mkdir -p "$PRIVATE_ADDONS_DIR"
+  - 'test -n "$GOOGLE_MAP_VIEW_MODULE" || (echo "ERROR: env var GOOGLE_MAP_VIEW_MODULE is not set" && exit 1)'
   - |
     if [ -n "$GH_TOKEN" ]; then
       echo "Cloning private addon..."
       git clone "https://${GH_TOKEN}@${PRIVATE_ADDON_REPO}" \
-        "$PRIVATE_ADDONS_DIR/google_map_view"
+        "$PRIVATE_ADDONS_DIR/$GOOGLE_MAP_VIEW_MODULE"
       if [ -n "$PRIVATE_ADDON_REF" ]; then
-        cd "$PRIVATE_ADDONS_DIR/google_map_view" && git checkout "$PRIVATE_ADDON_REF" && cd -
+        cd "$PRIVATE_ADDONS_DIR/$GOOGLE_MAP_VIEW_MODULE" && git checkout "$PRIVATE_ADDON_REF" && cd -
       fi
     fi
   - 'test -n "$MODULE" || (echo "ERROR: env var MODULE is not set" && exit 1)'
@@ -134,7 +136,7 @@ script:
     --without-demo=all
     --addons-path="$PRIVATE_ADDONS_DIR,$ODOO_DIR/addons"
     -d "$DB_NAME"
-    -i "$MODULE"
+    -i "$GOOGLE_MAP_VIEW_MODULE"
 
 after_failure:
   # Helpful logs on failure
