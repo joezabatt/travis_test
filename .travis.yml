@@ -98,8 +98,15 @@ before_install:
   - export LANG=en_US.UTF-8 LC_ALL=en_US.UTF-8
 
 install:
-  # Install Updates
-  - echo "We will install later"
+  # Get Odoo 8
+  - git clone --depth 1 --branch "$ODOO_BRANCH" "$ODOO_REPO" "$ODOO_DIR"
+  # Use Odoo’s own requirements (plus your module’s, if present)
+  - pip install --upgrade pip==20.3.4 setuptools==44.1.1 wheel==0.34.2
+  - pip install -r "$ODOO_DIR/requirements.txt"
+  # Useful test libs for older stacks
+  - pip install psycopg2==2.7.7 mock==2.0.0 unittest2==1.1.0
+  # Optional: your module’s extra deps
+  - if [ -f requirements.txt ]; then pip install -r requirements.txt; fi
 
 before_script:
   # Prepare database
@@ -109,6 +116,7 @@ before_script:
   - echo "Odoo at $ODOO_DIR"
   - echo "Module $MODULE"
   - ls -la "$TRAVIS_BUILD_DIR"
+  - ls -la "$ODOO_DIR"
 
 script:
   # Run tests for your module
