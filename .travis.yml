@@ -156,10 +156,7 @@ before_script:
   - echo "Module $FIELDSERVICE_MODULE"
   - ls -la "$TRAVIS_BUILD_DIR"
   - echo "Travis dir $TRAVIS_BUILD_DIR"
-  - cd "$TRAVIS_BUILD_DIR"
-  - cd ..
-  - pwd
-  - ls
+  - cd "$TRAVIS_BUILD_DIR" && cd .. && pwd && ls
   - ls -la "$ODOO_DIR"
 
 script:
