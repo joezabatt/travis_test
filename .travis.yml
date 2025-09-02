@@ -14,6 +14,7 @@ env:
     - ODOO_BRANCH=8.0
     - ODOO_DIR=$HOME/odoo-8
     - DB_NAME=odoo_test
+    - POSTGRES_ADMIN_USER=postgres
     - DB_USER=odoo
     - PRIVATE_ADDONS_DIR=/tmp/private-addons
     - PRIVATE_ADDON_REPO=github.com/zabatt/google_map_view.git
@@ -110,7 +111,8 @@ install:
 
 before_script:
   # Prepare database
-  - psql -U "$DB_USER" -c 'CREATE EXTENSION IF NOT EXISTS "uuid-ossp";' -d postgres || true
+  - psql -U "$POSTGRES_ADMIN_USER" -c 'CREATE EXTENSION IF NOT EXISTS "uuid-ossp";' -d postgres || true
+  - psql -U "$POSTGRES_ADMIN_USER" createuser -s "$DB_USER"
   - createdb -U "$DB_USER" "$DB_NAME"
   # Sanity: show paths
   - echo "Odoo at $ODOO_DIR"
