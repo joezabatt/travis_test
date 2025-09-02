@@ -18,11 +18,16 @@ env:
     - DB_USER=odoo_user
     - CUSTOM_ADDONS_DIR=/tmp/private-addons
     - GOOGLE_MAP_VIEW_REPO=github.com/zabatt/google_map_view.git
-    - GOOGLE_MAP_VIEW_BRANCH=ratmil.torres_develop_10312_fix_dependency  # optional branch/tag
-    - FIELDSERVICE_REPO=github.com/zabatt/fieldservice.git
-    - FIELDSERVICE_BRANCH=ratmil.torres_develop_10312_fieldservice-automatic-tests-on-git-push  # optional branch/tag
-    # REQUIRED: set in Travis settings, e.g. MODULE=my_module
+    - GOOGLE_MAP_VIEW_BRANCH=ratmil.torres_develop_10312_fix_dependency
     - GOOGLE_MAP_VIEW_MODULE=google_map_view
+    - EMAIL_TO_FOLLOWER_REPO=github.com/zabatt/email_to_follower.git
+    - EMAIL_TO_FOLLOWER_BRANCH=develop
+    - EMAIL_TO_FOLLOWER_MODULE=email_to_follower
+    - ZFORM_REPO=github.com/zabatt/zform.git
+    - ZFORM_BRANCH=develop
+    - ZFORM_MODULE=zform
+    - FIELDSERVICE_REPO=github.com/zabatt/fieldservice.git
+    - FIELDSERVICE_BRANCH=ratmil.torres_develop_10312_fieldservice-automatic-tests-on-git-push
     - FIELDSERVICE_MODULE=fieldservice
 
 
@@ -96,6 +101,24 @@ before_install:
         "$CUSTOM_ADDONS_DIR/$GOOGLE_MAP_VIEW_MODULE"
       if [ -n "$GOOGLE_MAP_VIEW_BRANCH" ]; then
         cd "$CUSTOM_ADDONS_DIR/$GOOGLE_MAP_VIEW_MODULE" && git checkout "$GOOGLE_MAP_VIEW_BRANCH" && cd -
+      fi
+    fi
+  - |
+    if [ -n "$GH_TOKEN" ]; then
+      echo "Cloning email_to_follower module..."
+      git clone "https://${GH_TOKEN}@${EMAIL_TO_FOLLOWER_REPO}" \
+        "$CUSTOM_ADDONS_DIR/$EMAIL_TO_FOLLOWER_MODULE"
+      if [ -n "$EMAIL_TO_FOLLOWER_BRANCH" ]; then
+        cd "$CUSTOM_ADDONS_DIR/$EMAIL_TO_FOLLOWER_MODULE" && git checkout "$EMAIL_TO_FOLLOWER_BRANCH" && cd -
+      fi
+    fi
+  - |
+    if [ -n "$GH_TOKEN" ]; then
+      echo "Cloning zform module..."
+      git clone "https://${GH_TOKEN}@${ZFORM_REPO}" \
+        "$CUSTOM_ADDONS_DIR/$ZFORM_MODULE"
+      if [ -n "$ZFORM_BRANCH" ]; then
+        cd "$CUSTOM_ADDONS_DIR/$ZFORM_MODULE" && git checkout "$ZFORM_BRANCH" && cd -
       fi
     fi
   - |
