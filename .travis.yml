@@ -1,6 +1,5 @@
 # .travis.yml — Odoo 8 module tests on Ubuntu 16.04 (xenial)
 
-dist: xenial                  # Ubuntu 16.04
 language: python
 python:
   - "2.7"
@@ -30,6 +29,16 @@ env:
     - FIELDSERVICE_BRANCH=ratmil.torres_develop_10312_fieldservice-automatic-tests-on-git-push
     - FIELDSERVICE_MODULE=fieldservice
 
+jobs:
+  include:
+    - name: "Ubuntu 18.04 (bionic)"
+      dist: bionic
+    - name: "Ubuntu 20.04 (focal)"
+      dist: focal
+    - name: "Ubuntu 22.04 (jammy)"
+      dist: jammy
+    - name: "Ubuntu 24.04 (noble)"
+      dist: noble
 
 
 addons:
