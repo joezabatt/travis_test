@@ -155,9 +155,10 @@ before_script:
   - echo "Odoo at $ODOO_DIR"
   - echo "Module $FIELDSERVICE_MODULE"
   - ls -la "$TRAVIS_BUILD_DIR"
-  - echo "Travis dir $TRAVIS_BUILD_DIR"
-  - cd "$TRAVIS_BUILD_DIR" && cd .. && pwd && ls
   - ls -la "$ODOO_DIR"
+  - export TRAVIS_PARENT_DIR="$(dirname "$TRAVIS_BUILD_DIR")"
+  - echo "Parent dir $TRAVIS_PARENT_DIR"
+  - ls -la "$TRAVIS_PARENT_DIR"
 
 script:
   # Run tests for your module
